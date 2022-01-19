@@ -1,9 +1,23 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const pool = require('../database');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('Detta blir vad servern visar.');
+router.get('/', async (req, res, next) => {
+    await pool
+        .promise()
+        .query('SELECT * FROM users')
+        .then(([rows, fields]) => {
+            res.json({
+                data: rows,
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Database error',
+            });
+        });
 });
 
 module.exports = router;
