@@ -31,7 +31,6 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
     const id = req.params.id;
-
     if (isNaN(req.params.id)) {
         res.status(400).json({
             task: {
@@ -43,7 +42,7 @@ router.get('/:id', async (req, res, next) => {
         .query('SELECT * FROM tasks WHERE id = ?', [id])
         .then(([rows, fields]) => {
             res.json({
-                tasks: {
+                task: {
                     data: rows
                 }
             });
@@ -51,15 +50,23 @@ router.get('/:id', async (req, res, next) => {
         .catch(err => {
             console.log(err);
             res.status(500).json({
-                tasks: {
+                task: {
                     error: 'Error getting tasks'
                 }
             })
         });
-    // res.json({
-    //     id: req.params.id
-    // })
+});
 
+router.get('/:id/delete', async (req, res, next) => {
+    const id = req.params.id;
+    res.json(`deleting task ${id}`);
+    // if (isNaN(req.params.id)) {
+    //     res.status(400).json({
+    //         task: {
+    //             error: 'Bad request'
+    //         }
+    //     });
+    // }
 });
 
 module.exports = router;
