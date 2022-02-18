@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../database');
+const pool = require('../../database');
 /* 
     BASE URL /tasks
     GET / - Get all tasks
@@ -13,11 +13,11 @@ router.get('/', async (req, res, next) => {
     await pool.promise()
         .query('SELECT * FROM tasks')
         .then(([rows, fields]) => {
-              res.render('tasks.njk', {
-                tasks: rows,
-                title: 'Tasks',
-                layout: 'layout.njk'
-              });
+            res.json({
+                tasks: {
+                    data: rows
+                }
+            });
         })
         .catch(err => {
             console.log(err);
