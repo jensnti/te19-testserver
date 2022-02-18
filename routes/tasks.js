@@ -39,12 +39,26 @@ router.get('/:id', async (req, res, next) => {
             }
         });
     }
-
-    // hämta raden från databasen med 
-    // SELECT * FROM tasks WHERE id = id
-    res.json({
-        id: req.params.id
-    })
+    await pool.promise()
+        .query('SELECT * FROM tasks WHERE id = ?', [id])
+        .then(([rows, fields]) => {
+            res.json({
+                tasks: {
+                    data: rows
+                }
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                tasks: {
+                    error: 'Error getting tasks'
+                }
+            })
+        });
+    // res.json({
+    //     id: req.params.id
+    // })
 
 });
 
