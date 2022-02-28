@@ -3,7 +3,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
-const nunjucks = require('nunjucks')
+const nunjucks = require('nunjucks');
+const session = require('express-session');
 
 require('dotenv').config();
 
@@ -30,6 +31,12 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: 't0p-S3kreT5', // recommended but wont be set due to http
+    resave: false,
+    saveUninitialized: true,
+    cookie: {samesite: true}
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
