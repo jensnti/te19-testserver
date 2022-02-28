@@ -1,0 +1,21 @@
+<div>
+    <form 
+        class="{% if errors.task.error %}was-validated{% elif errors.task %}needs-validation{% endif %}"
+        action="/tasks"
+        method="post">
+        <div class="input-group has-validation mb-3">
+            <label for="task" class="visually-hidden">Task</label>
+            <input
+            class="form-control"
+            type="text"
+            name="task"
+            id="task"
+            placeholder="Write a task..."
+            required>
+            <button class="btn btn-primary" type="submit">Add task</button>
+            <div class="invalid-feedback">
+                {{ errors.task.error }}
+            </div>
+        </div>
+    </form>
+</div>

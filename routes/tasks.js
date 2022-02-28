@@ -10,15 +10,20 @@ const pool = require('../database');
     DELETE /:id - Delete a task by id
 */
 router.get('/', async (req, res, next) => {
-
+    let errors;
+    if (req.session.errors) {
+        errors = req.session.errors;
+        req.session.errors = null;
+    }
     await pool.promise()
         .query('SELECT * FROM tasks ORDER BY updated_at DESC')
         .then(([rows, fields]) => {
-              res.render('tasks.njk', {
+            res.render('tasks.njk', {
+                errors: errors,
                 tasks: rows,
                 title: 'Tasks',
-                layout: 'layout.njk'
-              });
+                layout: 'layout.njk',
+            });
         })
         .catch(err => {
             console.log(err);
@@ -60,14 +65,35 @@ router.get('/:id', async (req, res, next) => {
 
 router.get('/:id/delete', async (req, res, next) => {
     const id = req.params.id;
-    res.json(`deleting task ${id}`);
-    // if (isNaN(req.params.id)) {
-    //     res.status(400).json({
-    //         task: {
-    //             error: 'Bad request'
-    //         }
-    //     });
-    // }
+    // res.json(`deleting task ${id}`);
+    if (isNaN(req.params.id)) {
+        res.status(400).json({
+            task: {
+                error: 'Bad request'
+            }
+        });
+    }
+    await pool.promise()
+    .query('DELETE FROM tasks WHERE id = ?', [id])
+    .then((response) => {
+        if (response[0].affectedRows === 1) {
+            res.redirect('/tasks');
+        } else {
+            res.status(400).json({
+                task: {
+                    error: 'Task does not exist'
+                }
+            });
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            task: {
+                error: 'Error getting tasks'
+            }
+        })
+    });
 });
 
 router.post('/', async (req, res, next) => {
@@ -75,11 +101,18 @@ router.post('/', async (req, res, next) => {
     const task = req.body.task;
 
     if (task.length < 3) {
-        res.status(400).json({
+        // res.status(400).json({
+        //     task: {
+        //         error: 'A task must have at least 3 characters'
+        //     }
+        // });
+        req.session.errors = { 
             task: {
-                error: 'A task must have at least 3 characters'
-            }
-        });
+                error: 'A task must have at least 3 characters',
+                value: task
+            },
+        };
+        return res.status(400).redirect('/tasks');
     }
 
     await pool.promise()
