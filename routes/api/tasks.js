@@ -69,6 +69,37 @@ router.get('/:id/delete', async (req, res, next) => {
     // }
 });
 
+
+router.post('/:id/complete', async (req, res, next) => {
+    // uppdatera task completed
+    const id = req.params.id;
+    if (isNaN(req.params.id)) {
+        res.status(400).json({
+            task: {
+                error: 'Bad request'
+            }
+        });
+    }
+    // https://www.w3schools.com/sql/sql_update.asp
+    await pool.promise()
+    .query('UPDATE tasks SET completed = !completed WHERE id = ?)', [id])
+    .then((response) => {
+        res.json({
+            task: {
+                data: response
+            }
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            task: {
+                error: 'Error getting tasks'
+            }
+        })
+    });
+});
+
 router.post('/', async (req, res, next) => {
     // { "task": "koda post" }
     const task = req.body.task;
@@ -89,12 +120,7 @@ router.post('/', async (req, res, next) => {
             }
         })
     });
-    
-    
-    // res.json(req.body);
-
 });
-
 
 module.exports = router;
 

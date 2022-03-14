@@ -133,6 +133,20 @@ router.post('/', async (req, res, next) => {
     // res.json(req.body);
 });
 
+router.post('/:id/complete', async (req, res, next) => {
+    const id = req.params.id;
+
+    await pool
+    .promise()
+    .query('UPDATE tasks SET completed = !completed WHERE id = ?', [id])
+    .then(response => {
+        console.log(response);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+})
+
 module.exports = router;
 
 /*
