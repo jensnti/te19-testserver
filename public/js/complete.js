@@ -7,12 +7,13 @@ window.addEventListener('load', () => {
             // Vi behöver elementets id
             // sedan behöver vi prata med servern och uppdatera databasen
             const id = event.target.id.split("-")[1];
-
             const url = `/tasks/${id}/complete`;
 
             fetch(url, {
                 method: 'POST'
             }).then(response => {
+                // här behöver vi trigga flash meddelandet från detta JS på frontend sidan
+                // men hur ska vi göra det?
                 console.log(response);
             }).catch(error => {
                 console.error(error);
