@@ -3,20 +3,15 @@ const Pool = require('pg-pool');
 
 let pool;
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 if (isProduction) {
-    const params = url.parse(process.env.DATABASE_URL);
-    const auth = params.auth.split(':');
-    const config = {
-        user: auth[0],
-        password: auth[1],
-        host: params.hostname,
-        port: params.port,
-        database: params.pathname.split('/')[1],
-        ssl: true,
-    };
-    pool = new Pool(config);
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    });
 } else {
     pool = mysql.createPool({
         connectionLimit: 10,
@@ -28,6 +23,6 @@ if (isProduction) {
     });
 }
 
-console.log(pool);
+console.log(pool)
 
 module.exports = pool;
