@@ -11,6 +11,7 @@ const pool = require('../database');
 */
 router.get('/', async (req, res, next) => {
     const flash = req.session.flash;
+    console.log(flash);
     req.session.flash = null;
     await pool
         .promise()
@@ -140,15 +141,6 @@ router.post('/:id/complete', async (req, res, next) => {
     .query('UPDATE tasks SET completed = !completed WHERE id = ?', [id])
     .then(response => {
         console.log(response);
-        // funkar inte då flash är kontrollerat från server
-        // men denna route är triggad från frontend med JS
-        // if (response[0].affectedRows === 1) {
-        //     req.session.flash = "Successfully updated task";
-        //     res.redirect('/tasks');
-        // } else {
-        //     req.session.flash = 'Update failed, please try again';
-        //     res.redirect('/tasks');
-        // }
     })
     .catch(error => {
         console.log(error);
