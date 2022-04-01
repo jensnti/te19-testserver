@@ -2,10 +2,8 @@ const mysql = require('mysql2');
 const Pool = require('pg-pool');
 
 let pool;
-
-const isProduction = process.env.NODE_ENV === "production";
-
-if (isProduction) {
+console.log(process.env.HEROKU)
+if (process.env.HEROKU === true) {
     pool = new Pool({
         connectionString: process.env.DATABASE_URL,
         ssl: {
